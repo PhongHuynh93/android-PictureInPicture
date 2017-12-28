@@ -25,18 +25,24 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity
-            android:name=".MainActivity"
-            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
-            android:supportsPictureInPicture="true">
+        <activity android:name=".TestActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".MediaSessionPlaybackActivity"
+        <activity android:name=".TestActivity2"/>
+        <!--info when set this view as singletask, when navigate to MainActivity when thre is a PIP, the PIP will restore to full screen.
+        if not set there are 2 activity, the full screen and the PIP -> can play video in parallel-->
+        <activity
+            android:name=".MainActivity"
+            android:launchMode="singleTask"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
-            android:supportsPictureInPicture="true" />
+            android:supportsPictureInPicture="true">
+        </activity>
+        <activity android:name=".MediaSessionPlaybackActivity"
+                  android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
+                  android:supportsPictureInPicture="true"/>
 
     </application>
 

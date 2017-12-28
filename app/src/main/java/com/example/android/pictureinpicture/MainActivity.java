@@ -38,41 +38,65 @@ import com.example.android.pictureinpicture.widget.MovieView;
 
 import java.util.ArrayList;
 
-/** Demonstrates usage of Picture-in-Picture mode on phones and tablets. */
+/**
+ * Demonstrates usage of Picture-in-Picture mode on phones and tablets.
+ */
 public class MainActivity extends AppCompatActivity {
 
-    /** Intent action for media controls from Picture-in-Picture mode. */
+    /**
+     * Intent action for media controls from Picture-in-Picture mode.
+     */
     private static final String ACTION_MEDIA_CONTROL = "media_control";
 
-    /** Intent extra for media controls from Picture-in-Picture mode. */
+    /**
+     * Intent extra for media controls from Picture-in-Picture mode.
+     */
     private static final String EXTRA_CONTROL_TYPE = "control_type";
 
-    /** The request code for play action PendingIntent. */
+    /**
+     * The request code for play action PendingIntent.
+     */
     private static final int REQUEST_PLAY = 1;
 
-    /** The request code for pause action PendingIntent. */
+    /**
+     * The request code for pause action PendingIntent.
+     */
     private static final int REQUEST_PAUSE = 2;
 
-    /** The request code for info action PendingIntent. */
+    /**
+     * The request code for info action PendingIntent.
+     */
     private static final int REQUEST_INFO = 3;
 
-    /** The intent extra value for play action. */
+    /**
+     * The intent extra value for play action.
+     */
     private static final int CONTROL_TYPE_PLAY = 1;
 
-    /** The intent extra value for pause action. */
+    /**
+     * The intent extra value for pause action.
+     */
     private static final int CONTROL_TYPE_PAUSE = 2;
 
-    /** The arguments to be used for Picture-in-Picture mode. */
+    /**
+     * info The arguments to be used for Picture-in-Picture mode.
+     */
     private final PictureInPictureParams.Builder mPictureInPictureParamsBuilder =
             new PictureInPictureParams.Builder();
 
-    /** This shows the video. */
+    /**
+     * This shows the video.
+     */
     private MovieView mMovieView;
 
-    /** The bottom half of the screen; hidden on landscape */
+    /**
+     * The bottom half of the screen; hidden on landscape
+     */
     private ScrollView mScrollView;
 
-    /** A {@link BroadcastReceiver} to receive action item events from Picture-in-Picture mode. */
+    /**
+     * A {@link BroadcastReceiver} to receive action item events from Picture-in-Picture mode.
+     */
     private BroadcastReceiver mReceiver;
 
     private String mPlay;
@@ -90,7 +114,16 @@ public class MainActivity extends AppCompatActivity {
                 }
             };
 
-    /** Callbacks from the {@link MovieView} showing the video playback. */
+    // info - Google Maps switches to PIP mode if the user presses the home or recents button while the app is navigating.
+    // catch this event by this method
+    @Override
+    protected void onUserLeaveHint() {
+        minimize();
+    }
+
+    /**
+     * Callbacks from the {@link MovieView} showing the video playback.
+     */
     private MovieView.MovieListener mMovieListener =
             new MovieView.MovieListener() {
 
@@ -121,10 +154,10 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Update the state of pause/resume action item in Picture-in-Picture mode.
      *
-     * @param iconId The icon to be used.
-     * @param title The title text.
+     * @param iconId      The icon to be used.
+     * @param title       The title text.
      * @param controlType The type of the action. either {@link #CONTROL_TYPE_PLAY} or {@link
-     *     #CONTROL_TYPE_PAUSE}.
+     *                    #CONTROL_TYPE_PAUSE}.
      * @param requestCode The request code for the {@link PendingIntent}.
      */
     void updatePictureInPictureActions(
@@ -188,6 +221,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    // info - by making it as singletask, the video is never stop when resume back.
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
     protected void onStop() {
         // On entering Picture-in-Picture mode, onPause is called, but not onStop.
         // For this reason, this is the place where we should pause the video playback.
@@ -196,10 +245,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    // info - helpful - Show the video controls so the video can be easily resumed.
+    @Override
     protected void onRestart() {
         super.onRestart();
         if (!isInPictureInPictureMode()) {
-            // Show the video controls so the video can be easily resumed.
             mMovieView.showControls();
         }
     }
@@ -218,6 +272,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // info - Handling UI during picture-in-picture
     @Override
     public void onPictureInPictureModeChanged(
             boolean isInPictureInPictureMode, Configuration configuration) {
@@ -258,14 +313,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /** Enters Picture-in-Picture mode. */
+    /**
+     * info - Enters Picture-in-Picture mode.
+     */
     void minimize() {
         if (mMovieView == null) {
             return;
         }
         // Hide the controls in picture-in-picture mode.
         mMovieView.hideControls();
-        // Calculate the aspect ratio of the PiP screen.
+        // info Calculate the aspect ratio of the PiP screen., so the PIP only show the videoview without showing other UI
         Rational aspectRatio = new Rational(mMovieView.getWidth(), mMovieView.getHeight());
         mPictureInPictureParamsBuilder.setAspectRatio(aspectRatio).build();
         enterPictureInPictureMode(mPictureInPictureParamsBuilder.build());
@@ -295,7 +352,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /** Launches {@link MediaSessionPlaybackActivity} and closes this activity. */
+    /**
+     * Launches {@link MediaSessionPlaybackActivity} and closes this activity.
+     */
     private class SwitchActivityOnClick implements View.OnClickListener {
         @Override
         public void onClick(View view) {
